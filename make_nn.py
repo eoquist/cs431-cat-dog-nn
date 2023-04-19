@@ -6,6 +6,9 @@ import keras
 # from keras.models import Model
 # from keras.layers import Dense
 
+# !!!! dont split into two separate cat dog folders
+#  option to save as an h5 or hd5
+# dont save it as a folder/dir
 
 if __name__ == "__main__":
     """
