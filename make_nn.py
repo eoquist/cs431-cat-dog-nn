@@ -1,7 +1,7 @@
 # If import errors are occuring inside VSCode, make sure that the right python version 
 # is being selected via the commmand palette
 import numpy as np
-from keras import layers,models
+import keras
 # import tensorflow as tf
 # from keras.models import Model
 # from keras.layers import Dense
@@ -9,11 +9,14 @@ from keras import layers,models
 
 if __name__ == "__main__":
     """
-    Your neural network generator, which will be called make nn.py. It will take two
-    command-line arguments: a directory in which the images are located, and the name
-    of the neural network file to create and save to disk. This program may assume that
-    all training image file names begin with c or d, for “cat” and “dog” respectively.
-"""
+    Your neural network generator, which will be called make nn.py. 
+    It will take two command-line arguments: 
+        a directory in which the images are located
+        and the name of the neural network file to create and save to disk. 
+        
+    This program may assume that all training image file names begin with c or d, for “cat” and “dog” respectively.
+    """
+    pass
 
 # Keras will let you know the current accuracy of your network on the training set as it trains.
 
@@ -71,3 +74,9 @@ if __name__ == "__main__":
 # again. (Particularly annoying, some networks may get stuck classifying everything as
 # a cat, or everything as a dog, and thus will always get 50% accuracy. Such models are
 # not useful.)
+
+# #####################################################################
+# code from book // examples
+model = keras.models.load_model(my_model_with_a_custom_loss.h5,
+                                custom_objects={"huber_fn":huber_fn})
+keras.losses.Huber
