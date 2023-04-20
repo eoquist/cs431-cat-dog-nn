@@ -1,12 +1,14 @@
-# If import errors are occuring inside VSCode, make sure that the right python version 
-# is being selected via the commmand palette
+# ensure python version is being selected via the commmand palette
+import os
 import numpy as np
-import keras
-# import tensorflow as tf
-# from keras.models import Model
-# from keras.layers import Dense
+import pandas as pd
+import tensorflow as tf
+from tensorflow import keras
+from keras import layers
+from keras.preprocessing.image import ImageDataGenerator
+from keras import Sequential, Model
+from keras.layers import Dense
 
-# !!!! dont split into two separate cat dog folders
 #  option to save as an h5 or hd5
 # dont save it as a folder/dir
 
@@ -30,6 +32,23 @@ if __name__ == "__main__":
 # The numbers and sizes of kernels.
 # The dropout rate to use.
 # The sizes of your fully connected (“dense”) layers.
+
+# n_neurons should be the pixel size? maybe? verify ???
+def build_model(n_hidden=1, n_neurons=30, learning_rate=3e-3, input_shape=[8]):
+    """
+    Simple model for univariate regression (only one output neuron), with the given input shape 
+    and the given number of hidden layers and neurons, and it compiles it using an optimizer 
+    configured with the specified learning rate.
+    """
+    model = Sequential()
+    model.add(layers.InputLayer(input_shape=input_shape))
+    for layer in range(n_hidden):
+        model.add(layers.Dense(n_neurons,activation="relu"))
+    model.add(layers.Dense(1))
+    optimizer = keras.optimizers.SGD(lr=learning_rate)
+    model.compile(loss="mse",optimizer=optimizer)
+    return model
+
 
 # However, your last layer will almost certainly be a “softmax” layer, that is trained on [1,0]
 # for cats and [0,1] for dogs (or vice-versa). Remember that there is more than one right
@@ -77,9 +96,3 @@ if __name__ == "__main__":
 # again. (Particularly annoying, some networks may get stuck classifying everything as
 # a cat, or everything as a dog, and thus will always get 50% accuracy. Such models are
 # not useful.)
-
-# #####################################################################
-# code from book // examples
-model = keras.models.load_model(my_model_with_a_custom_loss.h5,
-                                custom_objects={"huber_fn":huber_fn})
-keras.losses.Huber
