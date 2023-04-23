@@ -13,10 +13,10 @@ __license__ = "MIT"
 __date__ = "April 2023"
 # Credits to: Patrick Loeber and his CNN tutorial video
 
-from pathlib import Path
 import os
 import sys
 import numpy as np
+import pandas as pd
 # from PIL import Image
 import cv2
 import matplotlib.pyplot as plt
@@ -36,44 +36,38 @@ test_labels = None
 def create_training():
     """ Handling the give directory containing training images. """
     file_names = os.listdir(image_directory)
-    num_images = len(file_names)
-    train_images = np.zeros((num_images, 100, 100, 3), dtype=np.uint8)
-    train_labels = np.zeros(num_images)
-
-
-    train_datagen = ImageDataGenerator(rescale=1./255, validation_split=0.2, dtype='uint8')
-
-    train_generator = train_datagen.flow_from_directory(
-        directory='path/to/training/directory',
-        target_size=(100, 100),
-        batch_size=32,
-        class_mode='binary',
-        subset='training')
-
+    # train_images = np.zeros((len(file_names), 100, 100, 3), dtype=np.uint8)
+    train_labels = []
 
     for filename in file_names:
-        img = cv2.imread(os.path.join(image_directory, filename))
+        # Create a list of labels for each image
+        if filename.startswith('c'):
+            train_labels.append(1)
+        else:
+            train_labels.append(0)
 
-        # precautions
-        if img is not None:
-            # image formatting 
-            # img = img.astype('uint8') / 255.0
-            img = img.astype('uint8')
-            if len(img.shape) == 2: # convert greyscale images to color
-                img_rgb = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
-            
-            # training
-            train_images = np.append(train_images, img)
-            print(filename)
-            if filename.startswith('c'):
-                train_labels = np.append(train_labels,1)
-            else:
-                train_labels = np.append(train_labels,0)
+    print("len train_images: " + str(len(train_images)))
+    print("len train_labels: " + str(len(train_images)))
+    
+    train_datagen = ImageDataGenerator(rescale=1./255., validation_split=0.2, dtype='uint8')
+    dataframe = pd.DataFrame({
+        'filename': file_names,
+        'label': train_labels
+    })
 
-    print("len train_images")
-    print(len(train_images))
-    print("len train_labels")
-    print(len(train_labels))
+    # Mostly helps to batch feed
+    train_generator = train_datagen.flow_from_dataframe( # DirectoryIterator
+        dataframe=dataframe,
+        directory=image_directory,
+        filename='filename',
+        label='label',
+        batch_size=32,
+        class_mode='binary',
+        subset='training'
+    )
+
+
+    
     return train_images, train_labels
 
 # Keras will let you know the current accuracy of your network on the training set as it trains.
@@ -142,7 +136,7 @@ if __name__ == "__main__":
         print('Usage: python make_nn.py <image directory> <name of neural network file to create> \n', file=sys.stderr)
         exit(1)
 
-    image_directory = Path(sys.argv[1]) # /Users/ecmo/cs431-cat-dog-nn/cats-and-dogs
+    image_directory = sys.argv[1] # /Users/ecmo/cs431-cat-dog-nn/cats-and-dogs
     nn_model_filename = sys.argv[2]
 
     # train_images = None
