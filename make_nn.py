@@ -25,7 +25,7 @@ import tensorflow as tf
 from tensorflow import keras
 from keras import layers, Sequential, Model
 from keras.preprocessing.image import ImageDataGenerator
-from sklearn.model_selection import train_test_split
+# from sklearn.model_selection import train_test_split
 
 # from keras.layers import Dense
 
@@ -39,7 +39,8 @@ test_labels = None
 def create_training():
     """ Handling the give directory containing training images. """
     file_names = os.listdir(image_directory)
-    train_images = np.zeros((len(file_names), 100, 100, 3), dtype=np.uint8)
+    num_files = len(file_names)
+    train_images = np.zeros((num_files, 100, 100, 3), dtype=np.uint8)
     train_labels = np.zeros(len(file_names))
 
     start = time.time() # !!!
@@ -55,7 +56,17 @@ def create_training():
     print("create training set time")
     print(end - start) # !!!
 
-    return train_images, train_labels
+    # test set
+    permutation = np.random.permutation(num_files)
+    shuffled_images = train_images[permutation]
+    shuffled_labels = train_labels[permutation]
+    # Split the data into training and testing sets
+    train_images = shuffled_images[:800]
+    train_labels = shuffled_labels[:800]
+    test_images = shuffled_images[800:]
+    test_labels = shuffled_labels[800:]
+
+    return train_images, train_labels, test_images, test_labels
 
 
 def build_model():
@@ -64,8 +75,8 @@ def build_model():
     and the given number of hidden layers and neurons, and it compiles it using an optimizer 
     configured with the specified learning rate.
     """
-    # Load the training set
-    train_images, train_labels = create_training()
+    # Load the training and testing set
+    train_images, train_labels, test_images, test_labels = create_training()
 
     model = Sequential([
         # Convolutional Layers
