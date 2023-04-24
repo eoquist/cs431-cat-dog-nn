@@ -27,8 +27,6 @@ from keras import layers, Sequential, Model
 from keras.preprocessing.image import ImageDataGenerator
 # from sklearn.model_selection import train_test_split
 
-# from keras.layers import Dense
-
 # globals
 image_directory = None
 nn_model_filename = 'emilee.dnn'
@@ -86,17 +84,17 @@ def build_model():
         layers.Dropout(0.5),
         layers.Conv2D(64, (3, 3), activation='relu'),
         layers.MaxPooling2D((2, 2)),
-        layers.Dropout(0.2),
+        layers.Dropout(0.5),
         # Dense Layers
         layers.Flatten(),
         layers.Dense(128, activation='relu'),
-        layers.Dropout(0.5),
-        layers.Dense(1, activation='sigmoid')
+        # layers.Dropout(0.5),
+        # layers.Dense(1, activation='sigmoid')
         # “softmax” layer that is trained on [1,0] for cats and [0,1] for dogs (or vice-versa). 
         # dense sigmoid allegedly better for binary classification over the general softmax
         # layers.Softmax()
     ])
-    print(model.summary())
+    # print(model.summary())
 
     # loss and optimizer
     model.compile(optimizer='adam',
@@ -119,15 +117,6 @@ def build_model():
     return model
 
 
-
-# Memory will be at a premium during this assignment. It may help you to monitor your 
-# computer’s free memory while you are executing this code. 
-# Converting a list to an array, may be impossible to do in a reasonable amount of time.
-
-# Beware of local minima while performing the gradient descent! If after a couple epochs,
-# the accuracy is not improving, stop your program and try again. 
-# Some networks may get stuck classifying everything as [X] or [Y], thus always getting 50% accuracy
-
 if __name__ == "__main__":
     """ Handles command line arguments: an image directory and string name of the neural network file to create."""
     if(len(sys.argv) < 3):
@@ -139,13 +128,5 @@ if __name__ == "__main__":
     nn_model_filename = sys.argv[2]
     nn_model_filename += ".h5"
 
-    # train_images = None
-    # test_images = None
-
-    # Grayscale images won't appear to have the same dimensionality as color images.
-    # They will appear to be 100 ×100, not 100 ×100 ×1 or 100 ×100 ×3
-    # Find a way to change them to be “color” images before training on them.
-
-    # train_images, train_labels = create_training()
     build_model()
     
