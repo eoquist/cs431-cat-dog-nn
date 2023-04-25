@@ -73,20 +73,16 @@ def build_model():
 
     model = Sequential([
         # Convolutional Layers
-        # 32 filters, 3x3 kernel
-        layers.Conv2D(32, (3, 3), strides=(2,2), padding="same", activation='relu', input_shape=(100, 100, 3)),
-        # layers.BatchNormalization(),
-        layers.MaxPooling2D((2, 2)),
-        # layers.Dropout(0.5),
-        layers.Conv2D(64, (3, 3), activation='relu'),
+        layers.Conv2D(64, (3, 3), strides=(2,2), padding="same", activation='relu', input_shape=(100, 100, 3)),
         layers.BatchNormalization(),
         layers.MaxPooling2D((2, 2)),
-        # layers.Dropout(0.5),
+        layers.Conv2D(64, (3, 3), activation='relu', input_shape=(100, 100, 3)),
+        layers.MaxPooling2D((2, 2)),
+        layers.Dropout(0.5),
+
         # Dense Layers
         layers.Flatten(),
-        layers.Dense(128, activation='relu'),
-        layers.Dropout(0.5),
-        layers.Dense(32, activation='relu'),
+        layers.Dense(64, activation='relu'),
         layers.Dropout(0.5),
         layers.Dense(1, activation='sigmoid')
         # “softmax” layer that is trained on [1,0] for cats and [0,1] for dogs (or vice-versa). 
@@ -100,10 +96,11 @@ def build_model():
 
     # training
     batch_size = 32
-    epochs = 30
+    epochs = 60
     model.fit(train_images, train_labels, epochs=epochs, batch_size=batch_size, verbose=1)
 
     # evaulate
+    print("evaluate")
     model.evaluate(test_images,  test_labels, batch_size=batch_size, verbose=1)
     # model.save(nn_model_filename, include_optimizer = False)
     model.save(nn_model_filename) # allow it to continue training?
@@ -123,8 +120,9 @@ def load(model_name):
     
     # Train the model for additional epochs
     batch_size = 32
-    epochs = 30
+    epochs = 60
     model.fit(train_images, train_labels, epochs=epochs, batch_size=batch_size, verbose=1)
+    print("evaluate")
     model.evaluate(test_images,  test_labels, batch_size=batch_size, verbose=1)
     model.save(model_name) # allow it to continue training?
 
@@ -133,6 +131,7 @@ def load(model_name):
 if __name__ == "__main__":
     """ Handles command line arguments: an image directory and string name of the neural network file to create."""
     if(len(sys.argv) == 2):
+        print("retraining")
         image_directory = "/Users/ecmo/cs431-cat-dog-nn/cats-and-dogs"
         nn_model_filename = sys.argv[1]
         load(nn_model_filename) # python make_nn.py continue_training.h5
@@ -140,7 +139,8 @@ if __name__ == "__main__":
         print('Usage: python make_nn.py <image directory> <name of neural network file to create> \n', file=sys.stderr)
         exit(1)
     else:
-        # python make_nn.py /Users/ecmo/cs431-cat-dog-nn/cats-and-dogs 32conv2d64
+        # python make_nn.py /Users/ecmo/cs431-cat-dog-nn/cats-and-dogs kill_cpu
+        print("building model...")
         image_directory = sys.argv[1] 
         nn_model_filename = sys.argv[2]
         nn_model_filename += ".h5"

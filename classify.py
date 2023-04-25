@@ -18,23 +18,24 @@ import numpy as np
 if __name__ == "__main__":
     if(len(sys.argv) < 3):
         print('Usage: python classify.py <neural network> <image file to classify>\n', file=sys.stderr)
+        # python classify.py continue_training.h5 /Users/ecmo/cs431-cat-dog-nn/cats-and-dogs/c1.jpg
         exit(1)
-        # for i, arg in enumerate(sys.argv):
-        #     print(f"Argument {i:>6}: {arg}")
 
     # Load the trained model
     model = load_model(sys.argv[1])
+    print("model loaded") # !!!
 
     for iterator, filename in enumerate(sys.argv):
         if iterator >= 2:
-            # Load and preprocess the image
-            # img = image.load_img(filename, target_size=(100, 100))
             image = cv2.imread(filename)
 
             if image is not None:
+                image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)  # convert BGR to RGB
+                image = cv2.resize(image, (100, 100))
+                image = image.astype('uint8') / 255.0
+                image = np.expand_dims(image, axis=0)  # add batch dimension
                 if len(image.shape) == 2: # convert greyscale images to color
                     image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
-                image = image.astype('uint8') / 255.0
 
             # Classify the image
             prediction = model.predict(image)
